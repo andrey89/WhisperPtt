@@ -36,16 +36,19 @@ On first launch, go to **Settings** and specify the path to your Whisper model `
 
 ## Whisper Model Download
 
-Download a model from Hugging Face and place it anywhere on disk:
+Models are stored in `%AppData%\WhisperPtt\Models\`. Download the desired `.bin` file from Hugging Face and place it there:
 
-| Model   | Size   | Speed  | Accuracy |
-|---------|--------|--------|----------|
-| tiny    | 75 MB  | ⚡⚡⚡⚡ | ★★☆☆     |
-| base    | 142 MB | ⚡⚡⚡  | ★★★☆     |
-| small   | 466 MB | ⚡⚡    | ★★★★     |
-| medium  | 1.5 GB | ⚡     | ★★★★★    |
+| Model          | File                      | Size   | Speed  | Accuracy |
+|----------------|---------------------------|--------|--------|----------|
+| tiny           | ggml-tiny.bin             | 75 MB  | ⚡⚡⚡⚡ | ★★☆☆     |
+| base           | ggml-base.bin             | 142 MB | ⚡⚡⚡  | ★★★☆     |
+| small          | ggml-small.bin            | 466 MB | ⚡⚡    | ★★★★     |
+| medium         | ggml-medium.bin           | 1.5 GB | ⚡     | ★★★★★    |
+| large-v3-turbo | ggml-large-v3-turbo.bin   | 1.6 GB | ⚡     | ★★★★★    |
 
-Download link: https://huggingface.co/ggerganov/whisper.cpp/tree/main
+Download: https://huggingface.co/ggerganov/whisper.cpp/tree/main
+
+After placing the file, select the model name (e.g. `base`) in the app Settings.
 
 ---
 
@@ -61,16 +64,20 @@ Download link: https://huggingface.co/ggerganov/whisper.cpp/tree/main
 
 ## Configuration
 
-Settings are saved to `settings.json` next to the executable:
+Settings are saved automatically to `%AppData%\WhisperPtt\settings.json`:
 
 ```json
 {
-  "ModelPath": "C:\\Models\\ggml-small.bin",
-  "HotkeyVirtualKeyCode": 120,
-  "Language": "auto",
-  "UseGpu": true
+  "SelectedModel": "base",
+  "SelectedLanguage": "ru",
+  "SelectedAudioDevice": "Системный по умолчанию",
+  "CustomPrompt": "",
+  "UnloadTimeoutMinutes": 10,
+  "Hotkey": "F2"
 }
 ```
+
+Available models: `tiny`, `base`, `small`, `medium`, `large-v3-turbo`, `large-v3`
 
 ---
 
