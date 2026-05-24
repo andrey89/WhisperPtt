@@ -1,0 +1,24 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# User-specific settings (generated on first run)
+settings.json
+
+# Whisper model files (large, download separately)
+*.bin
+*.gguf
+
+# Temp / OS files
+*.tmp
+Thumbs.db
+ehthumbs.db
+Desktop.ini

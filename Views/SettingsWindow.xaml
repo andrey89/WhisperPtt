@@ -1,0 +1,431 @@
+<Window x:Class="WhisperPtt.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Параметры WhisperPtt"
+        Width="460"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#0F0F1A"
+        Foreground="#E2E8F0">
+
+    <Window.Resources>
+        <!-- Modern ComboBox style with compact height -->
+        <Style x:Key="ModernComboBox" TargetType="ComboBox">
+            <Setter Property="Background" Value="#18182B"/>
+            <Setter Property="Foreground" Value="#E2E8F0"/>
+            <Setter Property="BorderBrush" Value="#334155"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton"
+                                          BorderBrush="{TemplateBinding BorderBrush}"
+                                          BorderThickness="{TemplateBinding BorderThickness}"
+                                          Background="{TemplateBinding Background}"
+                                          Grid.Column="2"
+                                          Focusable="false"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="Border"
+                                                CornerRadius="6"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="26" />
+                                                </Grid.ColumnDefinitions>
+                                                <Path x:Name="Arrow"
+                                                      Grid.Column="1"
+                                                      Fill="#94A3B8"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"
+                                                      Data="M 0 0 L 3 3 L 6 0 Z" />
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="true">
+                                                <Setter TargetName="Border" Property="BorderBrush" Value="#818CF8"/>
+                                                <Setter TargetName="Arrow" Property="Fill" Value="#E2E8F0"/>
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="true">
+                                                <Setter TargetName="Border" Property="BorderBrush" Value="#6366F1"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter x:Name="ContentSite"
+                                              IsHitTestVisible="False"
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                              Margin="{TemplateBinding Padding}"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Left" />
+                            <Popup x:Name="Popup"
+                                   Placement="Bottom"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   PopupAnimation="Slide">
+                                <Grid x:Name="DropDown"
+                                      SnapsToDevicePixels="True"
+                                      MinWidth="{TemplateBinding ActualWidth}"
+                                      MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder"
+                                            Background="#18182B"
+                                            BorderBrush="#334155"
+                                            BorderThickness="1"
+                                            CornerRadius="6"
+                                            Margin="0,2,0,2">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="8" Color="#000000" Opacity="0.3" ShadowDepth="2"/>
+                                        </Border.Effect>
+                                        <ScrollViewer Margin="2" SnapsToDevicePixels="True">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                        </ScrollViewer>
+                                    </Border>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="#C0C4D0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="Border"
+                                CornerRadius="4"
+                                Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                Margin="2,1">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="Border" Property="Background" Value="#312E81"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter TargetName="Border" Property="Background" Value="#4F46E5"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern TextBox style with compact height -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="#18182B"/>
+            <Setter Property="Foreground" Value="#E2E8F0"/>
+            <Setter Property="BorderBrush" Value="#334155"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="CaretBrush" Value="#818CF8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="Border"
+                                CornerRadius="6"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#818CF8"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#6366F1"/>
+                                <Setter TargetName="Border" Property="Background" Value="#121222"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Compact Gradient Accent button style -->
+        <Style x:Key="AccentButton" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}"
+                                BorderThickness="0">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#4F46E5" Offset="0"/>
+                                    <GradientStop Color="#06B6D4" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.75"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Compact Secondary button style -->
+        <Style x:Key="SecondaryButton" TargetType="Button">
+            <Setter Property="Foreground" Value="#E2E8F0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="20,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#334155"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}"
+                                Background="#1E1E38"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#2D2D4E"/>
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="#475569"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Compact Label style -->
+        <Style x:Key="SettingLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Panel (Compact) -->
+        <Border Grid.Row="0"
+                Background="#131324"
+                Padding="20,10"
+                BorderBrush="#1E1E38"
+                BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal">
+                <Viewbox Width="28" Height="28" Margin="0,0,10,0">
+                    <Grid>
+                        <Ellipse Width="36" Height="36" Fill="#231E58" />
+                        <Ellipse Width="18" Height="18" Fill="Transparent" Stroke="#818CF8" StrokeThickness="3.5" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Path Fill="#818CF8" Data="M 18 2 L 18 6 M 18 30 L 18 34 M 2 18 L 6 18 M 30 18 L 34 18 M 7 7 L 10 10 M 26 26 L 29 29 M 7 26 L 10 23 M 26 7 L 29 10" Stroke="#818CF8" StrokeThickness="3.5" StrokeEndLineCap="Round" />
+                        <Ellipse Width="6" Height="6" Fill="#818CF8" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Grid>
+                </Viewbox>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Параметры WhisperPtt"
+                               FontWeight="Bold"
+                               FontSize="15"
+                               Foreground="White"/>
+                    <TextBlock Text="Настройка модели ИИ, горячих клавиш и аудио"
+                               FontSize="10"
+                               Foreground="#94A3B8"
+                               Margin="0,1,0,0"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Content Area (Zero-scrolling layout) -->
+        <Grid Grid.Row="1" Margin="20,12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- AI Model -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                <TextBlock Text="МОДЕЛЬ РАСПОЗНАВАНИЯ" Style="{StaticResource SettingLabel}"/>
+                <ComboBox Style="{StaticResource ModernComboBox}"
+                          ItemsSource="{Binding AvailableModels}"
+                          SelectedItem="{Binding SelectedModelItem}"
+                          DisplayMemberPath="DisplayName"
+                          Height="30"/>
+            </StackPanel>
+
+            <!-- Language -->
+            <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                <TextBlock Text="ЯЗЫК РЕЧИ (ПО УМОЛЧАНИЮ)" Style="{StaticResource SettingLabel}"/>
+                <ComboBox Style="{StaticResource ModernComboBox}"
+                          ItemsSource="{Binding AvailableLanguages}"
+                          SelectedItem="{Binding SelectedLanguageItem}"
+                          DisplayMemberPath="DisplayName"
+                          Height="30"/>
+            </StackPanel>
+
+            <!-- Audio Source -->
+            <StackPanel Grid.Row="2" Margin="0,0,0,10">
+                <TextBlock Text="ИСТОЧНИК ЗВУКА (МИКРОФОН)" Style="{StaticResource SettingLabel}"/>
+                <ComboBox Style="{StaticResource ModernComboBox}"
+                          ItemsSource="{Binding AvailableAudioDevices}"
+                          SelectedItem="{Binding SelectedAudioDevice}"
+                          Height="30"/>
+            </StackPanel>
+
+            <!-- Unload Timeout -->
+            <StackPanel Grid.Row="3" Margin="0,0,0,10">
+                <TextBlock Text="ТАЙМАУТ ВЫГРУЗКИ МОДЕЛИ" Style="{StaticResource SettingLabel}"/>
+                <ComboBox Style="{StaticResource ModernComboBox}"
+                          ItemsSource="{Binding AvailableTimeouts}"
+                          SelectedItem="{Binding SelectedTimeoutItem}"
+                          DisplayMemberPath="DisplayName"
+                          Height="30"/>
+            </StackPanel>
+
+            <!-- Hotkey -->
+            <StackPanel Grid.Row="4" Margin="0,0,0,10">
+                <TextBlock Text="ГОРЯЧАЯ КЛАВИША PUSH-TO-TAL" Style="{StaticResource SettingLabel}"/>
+                <Grid>
+                    <TextBox Style="{StaticResource ModernTextBox}"
+                             Text="{Binding HotkeyDisplay, Mode=OneWay}"
+                             IsReadOnly="True"
+                             Height="30"
+                             x:Name="HotkeyTextBox"
+                             PreviewKeyDown="HotkeyTextBox_PreviewKeyDown"
+                             GotFocus="HotkeyTextBox_GotFocus"
+                             LostFocus="HotkeyTextBox_LostFocus"
+                             VerticalContentAlignment="Center"/>
+                    <TextBlock Text="[Режим записи клавиши]"
+                               Foreground="#F59E0B"
+                               FontWeight="SemiBold"
+                               FontSize="11"
+                               Margin="0,0,10,0"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCapturingHotkey}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </StackPanel>
+
+            <!-- Custom Prompt -->
+            <StackPanel Grid.Row="5" Margin="0,0,0,4">
+                <TextBlock Text="СИСТЕМНЫЙ ПРОМПТ ПОДСКАЗКИ" Style="{StaticResource SettingLabel}"/>
+                <Grid VerticalAlignment="Stretch">
+                    <TextBox Style="{StaticResource ModernTextBox}"
+                             Text="{Binding CustomPrompt, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             MinHeight="55"
+                             MaxHeight="55"
+                             VerticalScrollBarVisibility="Auto"
+                             x:Name="PromptTextBox"/>
+                    <TextBlock Text="Введите промпт (имена, термины для корректного перевода)..."
+                               Foreground="#475569"
+                               FontSize="11"
+                               Margin="10,6,0,0"
+                               IsHitTestVisible="False"
+                               VerticalAlignment="Top">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=PromptTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </StackPanel>
+        </Grid>
+
+        <!-- Action Buttons (Compact) -->
+        <Border Grid.Row="2"
+                Background="#131324"
+                Padding="20,12"
+                BorderBrush="#1E1E38"
+                BorderThickness="0,1,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="WhisperPtt v1.0.1"
+                           Foreground="#475569"
+                           FontSize="10"
+                           VerticalAlignment="Center"/>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Content="Отмена"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding CancelCommand}"
+                            Margin="0,0,8,0"/>
+                    <Button Content="Сохранить"
+                            Style="{StaticResource AccentButton}"
+                            Command="{Binding SaveCommand}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

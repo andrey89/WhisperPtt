@@ -1,0 +1,14 @@
+<Application x:Class="WhisperPtt.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:WhisperPtt"
+             ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+        <!-- Global dark theme defaults -->
+        <SolidColorBrush x:Key="AppBackground" Color="#1E1E2E"/>
+        <SolidColorBrush x:Key="AppForeground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="AccentPrimary" Color="#6366F1"/>
+        <SolidColorBrush x:Key="AccentSecondary" Color="#06B6D4"/>
+        <SolidColorBrush x:Key="ControlBackground" Color="#2A2A3E"/>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,259 @@
+<Window x:Class="WhisperPtt.Views.WidgetWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:WhisperPtt.ViewModels"
+        Title="WhisperPtt Widget"
+        Topmost="True"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight"
+        Background="Transparent">
+
+    <Window.Resources>
+        <!-- Gradient brushes -->
+        <LinearGradientBrush x:Key="AccentGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#6366F1" Offset="0"/>
+            <GradientStop Color="#06B6D4" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Spinning animation storyboards for both loading and transcribing states -->
+        <Storyboard x:Key="SpinAnimation" RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="SpinTransform"
+                Storyboard.TargetProperty="Angle"
+                From="0" To="360"
+                Duration="0:0:1.5"/>
+        </Storyboard>
+
+        <Storyboard x:Key="SpinAnimationTranscribe" RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="SpinTransform"
+                Storyboard.TargetProperty="Angle"
+                From="0" To="360"
+                Duration="0:0:1.5"/>
+        </Storyboard>
+    </Window.Resources>
+
+    <!-- Apple-style frosted-glass capsule shape -->
+    <Border CornerRadius="28"
+            Background="#660A0A14"
+            BorderBrush="#25FFFFFF"
+            BorderThickness="1"
+            Padding="16,8,20,8"
+            Width="300" Height="56"
+            Margin="20">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="25" Color="#000000" Opacity="0.5" ShadowDepth="0"/>
+        </Border.Effect>
+
+        <Grid>
+            <!-- Two column layout: 1. Siri-style orb icon (36px) 2. Dynamic content area -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="36"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Column 0: Siri/Apple-style modern animated microphone orb -->
+            <Grid Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!-- Outer soft neon background glow (pulsating & scattering with voice volume) -->
+                <Ellipse Width="24" Height="24" RenderTransformOrigin="0.5,0.5" Opacity="{Binding HaloOpacity}">
+                    <Ellipse.Fill>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#06B6D4" Offset="0"/>
+                            <GradientStop Color="#6366F1" Offset="0.6"/>
+                            <GradientStop Color="Transparent" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Ellipse.Fill>
+                    <Ellipse.RenderTransform>
+                        <ScaleTransform ScaleX="{Binding HaloScale}" ScaleY="{Binding HaloScale}"/>
+                    </Ellipse.RenderTransform>
+                </Ellipse>
+
+                <!-- Core Pulsating Orb (responsive to RMS microphone volume levels) -->
+                <Ellipse x:Name="Orb" Width="18" Height="18" RenderTransformOrigin="0.5,0.5">
+                    <Ellipse.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#6366F1" Offset="0"/>
+                            <GradientStop Color="#06B6D4" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Ellipse.Fill>
+                    <Ellipse.RenderTransform>
+                        <ScaleTransform ScaleX="{Binding PulseScale}" ScaleY="{Binding PulseScale}"/>
+                    </Ellipse.RenderTransform>
+                </Ellipse>
+
+                <!-- Rotating dashed indicator overlay for active processing -->
+                <Ellipse x:Name="Spinner" Width="28" Height="28"
+                         StrokeThickness="2"
+                         StrokeDashArray="4 3"
+                         RenderTransformOrigin="0.5,0.5"
+                         Visibility="Collapsed">
+                    <Ellipse.Stroke>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#6366F1" Offset="0"/>
+                            <GradientStop Color="#06B6D4" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Ellipse.Stroke>
+                    <Ellipse.RenderTransform>
+                        <RotateTransform x:Name="SpinTransform" Angle="0"/>
+                    </Ellipse.RenderTransform>
+                    <Ellipse.Style>
+                        <Style TargetType="Ellipse">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static vm:WidgetState.Loading}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static vm:WidgetState.Transcribing}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Ellipse.Style>
+                </Ellipse>
+            </Grid>
+
+            <!-- Column 1: Clean responsive typography block based on app states -->
+            <Grid Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                
+                <!-- Downloading State -->
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static vm:WidgetState.Downloading}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Column="0" Grid.Row="0"
+                               Text="Загрузка модели..."
+                               Foreground="#FFFFFF"
+                               FontWeight="SemiBold"
+                               FontSize="12"/>
+
+                    <TextBlock Grid.Column="1" Grid.Row="0"
+                               Text="{Binding DownloadProgress, StringFormat={}{0}%}"
+                               Foreground="#06B6D4"
+                               FontWeight="Bold"
+                               FontSize="11"
+                               HorizontalAlignment="Right"/>
+
+                    <ProgressBar Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
+                                 Value="{Binding DownloadProgress}"
+                                 Minimum="0" Maximum="100"
+                                 Height="3"
+                                 Margin="0,4,0,0"
+                                 Background="#334155"
+                                 BorderThickness="0">
+                        <ProgressBar.Foreground>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#6366F1" Offset="0"/>
+                                <GradientStop Color="#06B6D4" Offset="1"/>
+                            </LinearGradientBrush>
+                        </ProgressBar.Foreground>
+                    </ProgressBar>
+                </Grid>
+
+                <!-- Loading State -->
+                <TextBlock Text="Подготовка ИИ..."
+                           Foreground="#E2E8F0"
+                           FontWeight="SemiBold"
+                           FontSize="13"
+                           VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static vm:WidgetState.Loading}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <!-- Recording State -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static vm:WidgetState.Recording}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBlock Text="Слушаю голоc"
+                               Foreground="#FFFFFF"
+                               FontWeight="SemiBold"
+                               FontSize="13"/>
+                    <TextBlock Text="..."
+                               Foreground="#A5B4FC"
+                               FontWeight="Bold"
+                               FontSize="13"/>
+                </StackPanel>
+
+                <!-- Transcribing State -->
+                <TextBlock Text="Распознаю речь..."
+                           Foreground="#FFFFFF"
+                           FontWeight="SemiBold"
+                           FontSize="13"
+                           VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static vm:WidgetState.Transcribing}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <!-- Error State -->
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static vm:WidgetState.Error}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Grid.Column="0" Text="⚠ " Foreground="#EF4444" FontWeight="Bold" FontSize="13"/>
+                    <TextBlock Grid.Column="1" 
+                               Text="{Binding ErrorText}"
+                               Foreground="#EF4444"
+                               FontWeight="SemiBold"
+                               FontSize="12"
+                               TextTrimming="CharacterEllipsis"
+                               VerticalAlignment="Center"/>
+                </Grid>
+
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
